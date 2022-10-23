@@ -1,0 +1,17 @@
+.main-bg-primary {
+  width: 100%;
+  min-height: 100vh;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url(../images/main_background.jpg);
+  background-position: center;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+form.user .form-control-user {
+  font-size: 1.2rem !important;
+  padding: 1.5rem 1rem;
+}
+
