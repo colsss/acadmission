@@ -19,7 +19,7 @@
                                                 FROM department WHERE id = $department_id");
                                     $department = mysqli_fetch_array($result);
                                 ?>
-                                <label for="course">Course</label>
+                                <label for="course">Department</label>
                                 <input type="text" name="department" class="form-control" value="<?php echo $department['department']?>" id="department" readonly>
                             </div>
                         </div>
