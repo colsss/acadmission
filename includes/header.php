@@ -17,7 +17,7 @@
     <!-- Custom styles for this template-->
     <link href="css/main_styles.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
-    <link href="css/new_style.css" rel="stylesheet">
+    <link href="css/styling.css" rel="stylesheet">
 
 
     <!-- Custom styles for this page -->

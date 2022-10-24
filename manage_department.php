@@ -23,8 +23,20 @@ if (isset($_POST['add_department'])) {
         header("location: manage_department.php");
     }
 }
-?>
 
+if (isset($_POST['update_department'])) {
+    $department_id = $_POST['department_id'];
+    $department = $_POST['department'];
+
+    $query = "UPDATE department SET department = $department WHERE id = $department_id";
+    $query_run = mysqli_query($link, $query);
+
+    if ($query_run) {
+        $_SESSION['success_status'] = "You have successfully update the department.";
+        header("location: manage_department.php");
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -89,13 +101,14 @@ if (isset($_POST['add_department'])) {
                                             <tr>
                                                 <td><?php echo $department['department']; ?></td>
                                                 <td class="text-center">
-                                                    <a href="#" class="btn btn-info btn-circle btn-sm">
+                                                    <a href="#" class="btn btn-info btn-circle btn-sm" data-toggle="modal" data-target="#update_department_<?php echo $department['id']; ?>">
                                                         <i class="fas fa-pencil-alt"></i>
                                                     </a>
                                                     <a href="#" class="btn btn-danger btn-circle btn-sm">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 </td>
+                                                <?php include 'update_department.php'; ?>
                                             </tr>
                                         <?php  } ?>
                                     </tbody>
@@ -114,7 +127,7 @@ if (isset($_POST['add_department'])) {
         <i class="fas fa-angle-up"></i>
     </a>
 
-    <!-- Add New Student Modal-->
+    <!-- Add New Examinee Modal-->
     <div class="modal fade" id="add_department" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

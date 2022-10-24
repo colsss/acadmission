@@ -5,9 +5,34 @@
     // Initialize the session
     session_start();
 
+    $temp_password = substr(md5(uniqid(rand(1,6))), 0, 8);
+
     $courses_sql = "SELECT * FROM courses";
     $courses_result = mysqli_query($link, $courses_sql);
     $courses = $courses_result->fetch_all(MYSQLI_ASSOC);
+
+    if (isset($_POST['save_examinee'])) {
+        $last_name = $_POST['last_name'];
+        $first_name = $_POST['first_name'];
+        $middle_name = $_POST['middle_name'];
+        $address = $_POST['address'];
+        $gender = $_POST['gender'];
+        $email_address = $_POST['email_address'];
+        $password = $_POST['password'];
+        $phone_number = $_POST['phone_number'];
+        $first_choice = $_POST['first_choice'];
+        $second_choice = $_POST['second_choice'];
+        $status = 1;
+
+        $query = "INSERT INTO examinee(last_name, first_name, middle_name, address, gender, email_address, password, phone_number, first_choice, second_choice, status)
+                VALUES ('$last_name', '$first_name', '$middle_name', '$address', '$gender', '$email_address' , '$password', '$phone_number', '$first_choice' , '$second_choice', '$status')";
+        $query_run = mysqli_query($link, $query);
+
+        if ($query_run) {
+            $_SESSION['success_status'] = "You have successfully added a new examinee.";
+            header("location: manage_examinee.php");
+        }
+    }
 ?>
 
 
@@ -38,7 +63,7 @@
                             <h6 class="m-0 font-weight-bold text-primary">Add Examinee</h6>
                         </div>
                         <div class="card-body">
-                            <form action="">
+                            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
@@ -100,7 +125,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="password">Password</label>
-                                            <input type="password" name="password" class="form-control" id="password" required>
+                                            <input type="text" name="password" class="form-control" id="password" value="<?php echo $temp_password; ?>" readonly>
                                         </div>
                                     </div>
 
@@ -139,7 +164,7 @@
                                 </div>
                                 <div class="row mt-2">
                                     <div class="col-md-12">
-                                        <button type="submit" name="save_student" class="btn btn-info btn-lg btn-icon-split">
+                                        <button type="submit" name="save_examinee" class="btn btn-info btn-lg btn-icon-split">
                                             <span class="icon text-white-50">
                                                 <i class="fas fa-save"></i>
                                             </span>

@@ -28,8 +28,20 @@ if (isset($_POST['add_course'])) {
         header("location: manage_course.php");
     }
 }
-?>
 
+if (isset($_POST['update_course'])) {
+    $course_id = $_POST['course_id'];
+    $course = $_POST['course'];
+
+    $query = "UPDATE course SET course = $course WHERE id = $course_id";
+    $query_run = mysqli_query($link, $query);
+
+    if ($query_run) {
+        $_SESSION['success_status'] = "You have successfully update the course.";
+        header("location: manage_course.php");
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -104,13 +116,14 @@ if (isset($_POST['add_course'])) {
                                                     <?php echo $row['department']; ?>
                                                 </td>
                                                 <td class="text-center">
-                                                    <a href="#" class="btn btn-info btn-circle btn-sm">
+                                                    <a href="#" class="btn btn-info btn-circle btn-sm" data-toggle="modal" data-target="#update_course_<?php echo $course['id']; ?>">
                                                         <i class="fas fa-pencil-alt"></i>
                                                     </a>
                                                     <a href="#" class="btn btn-danger btn-circle btn-sm">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 </td>
+                                                <?php include 'update_course.php'; ?>
                                             </tr>
                                         <?php  } ?>
                                     </tbody>

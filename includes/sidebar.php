@@ -12,13 +12,13 @@
     <!-- Divider -->
     <hr class="sidebar-divider my-0">
 
-    <li class="nav-item active">
+    <li class="nav-item <?php if ($_SERVER['PHP_SELF'] == '/acadmission/dashboard.php') { ?>active <?php } ?>">
         <a class="nav-link" href="index.php">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span></a>
     </li>
 
-    <li class="nav-item">
+    <li class="nav-item <?php if ($_SERVER['PHP_SELF'] == '/acadmission/add_examinee.php' || $_SERVER['PHP_SELF'] == '/acadmission/manage_examinee.php') { ?>active <?php } ?>">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
             <i class="fas fa-fw fa-user"></i>
             <span>Examinee</span>
@@ -31,7 +31,7 @@
         </div>
     </li>
 
-    <li class="nav-item">
+    <li class="nav-item <?php if ($_SERVER['PHP_SELF'] == '/acadmission/manage_department.php' || $_SERVER['PHP_SELF'] == '/acadmission/manage_course.php') { ?>active <?php } ?>">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#Course" aria-expanded="true" aria-controls="collapseUtilities">
             <i class="fas fa-fw fa-star"></i>
             <span>Academic Program</span>
@@ -44,7 +44,7 @@
         </div>
     </li>
 
-    <li class="nav-item">
+    <li class="nav-item <?php if ($_SERVER['PHP_SELF'] == '/acadmission/manage_questionnaires.php' || $_SERVER['PHP_SELF'] == '/acadmission/questionnaires_form.php') { ?>active <?php } ?>">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#Questionnaires" aria-expanded="true" aria-controls="collapseUtilities">
             <i class="fas fa-fw fa-file"></i>
             <span>Questionnaires</span>

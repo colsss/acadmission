@@ -4,6 +4,10 @@ require_once "includes/config.php";
 
 // Initialize the session
 session_start();
+
+$examinee_sql = "SELECT * FROM examinee";
+$examinee_result = mysqli_query($link, $examinee_sql);
+$examinees = $examinee_result->fetch_all(MYSQLI_ASSOC);
 ?>
 
 
@@ -29,18 +33,18 @@ session_start();
                     <h1 class="h3 mb-4 text-gray-800">Manage Examinee</h1>
 
                     <div class="mb-3">
-                        <a href="#" class="btn btn-success btn-icon-split" data-toggle="modal" data-target="#add_new_student">
+                        <a href="add_examinee.php" class="btn btn-success btn-icon-split">
                             <span class="icon text-white-50">
                                 <i class="fas fa-plus"></i>
                             </span>
-                            <span class="text">Add New Student</span>
+                            <span class="text">Add New Examinee</span>
                         </a>
                     </div>
 
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Student List</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Examinee List</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -58,23 +62,41 @@ session_start();
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>Tiger Nixon</td>
-                                            <td>System Architect</td>
-                                            <td>Edinburgh</td>
-                                            <td>61</td>
-                                            <td>2011/04/25</td>
-                                            <td>$320,800</td>
-                                            <td>2011/04/25</td>
-                                            <td>
-                                                <a href="#" class="btn btn-info btn-circle btn-sm">
-                                                    <i class="fas fa-pencil-alt"></i>
-                                                </a>
-                                                <a href="#" class="btn btn-danger btn-circle btn-sm">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
+                                        <?php foreach($examinees as $examinee) { ?>
+                                            <tr>
+                                                <td><?php echo $examinee['last_name'] ?> <?php echo $examinee['first_name'] ?> <?php echo $examinee['middle_name'] ?></td>
+                                                <td><?php echo $examinee['address'] ?></td>
+                                                <td><?php echo $examinee['gender'] ?></td>
+                                                <td><?php echo $examinee['email_address'] ?></td>
+                                                <td><?php echo $examinee['phone_number'] ?></td>
+                                                <td>
+                                                    <?php
+                                                        $first_choice = $examinee['first_choice'];
+                                                        $result = mysqli_query($link, "SELECT *
+                                                            FROM courses WHERE id = $first_choice");
+                                                        $first_course = mysqli_fetch_array($result);
+                                                    ?>
+                                                    <?php echo $first_course['course']; ?>
+                                                </td>
+                                                <td>
+                                                    <?php
+                                                        $second_choice = $examinee['second_choice'];
+                                                        $result = mysqli_query($link, "SELECT *
+                                                            FROM courses WHERE id = $second_choice");
+                                                        $second_course = mysqli_fetch_array($result);
+                                                    ?>
+                                                    <?php echo $second_course['course']; ?>
+                                                </td>
+                                                <td>
+                                                    <a href="#" class="btn btn-info btn-circle btn-sm">
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                    </a>
+                                                    <a href="#" class="btn btn-danger btn-circle btn-sm">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        <?php } ?>
                                     </tbody>
                                 </table>
                             </div>
