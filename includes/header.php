@@ -18,9 +18,12 @@
     <link href="css/main_styles.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
     <link href="css/styling.css" rel="stylesheet">
-
+    <link href="css/icon.css" rel="stylesheet">
 
     <!-- Custom styles for this page -->
     <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <!-- Datepicker -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css" rel="stylesheet"/>
 
 </head>

@@ -15,8 +15,8 @@ require_once "includes/config.php";
 $username = $password = "";
 $username_err = $password_err = $login_err = "";
 
-// Processing form data when form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+//Professor Login
+if (isset($_POST['login_professor'])) {
 
     // Check if username is empty
     if (empty(trim($_POST["username"]))) {
@@ -58,11 +58,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             // Password is correct, so start a new session
                             session_start();
 
+                            //place otp verification here
+                            
                             // Store data in session variables
                             $_SESSION["loggedin"] = true;
                             $_SESSION["id"] = $id;
                             $_SESSION["username"] = $username;
                             $_SESSION["profile"] = $profile;
+                            $_SESSION["user"] = "professor";
 
                             header("location: index.php");
                         } else {
@@ -84,7 +87,83 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Close connection
     mysqli_close($link);
 }
+
+//Student Login
+if (isset($_POST['login_examinee'])) {
+
+    // Check if email address is empty
+    if (empty(trim($_POST["email_address"]))) {
+        $email_address_err = "Please enter email address.";
+    } else {
+        $email_address = trim($_POST["email_address"]);
+    }
+
+    // Check if password is empty
+    if (empty(trim($_POST["password"]))) {
+        $password_err = "Please enter your password.";
+    } else {
+        $password = trim($_POST["password"]);
+    }
+
+    // Validate credentials
+    if (empty($email_address_err) && empty($password_err)) {
+        // Prepare a select statement
+        $sql = "SELECT id, email_address, password FROM examinee WHERE email_address = ?";
+
+        if ($stmt = mysqli_prepare($link, $sql)) {
+            // Bind variables to the prepared statement as parameters
+            mysqli_stmt_bind_param($stmt, "s", $param_email_address);
+
+            // Set parameters
+            $param_email_address = $email_address;
+
+            // Attempt to execute the prepared statement
+            if (mysqli_stmt_execute($stmt)) {
+                // Store result
+                mysqli_stmt_store_result($stmt);
+
+                // Check if username exists, if yes then verify password
+                if (mysqli_stmt_num_rows($stmt) == 1) {
+                    // Bind result variables
+                    mysqli_stmt_bind_result($stmt, $id, $email_address, $hashed_password);
+                    if (mysqli_stmt_fetch($stmt)) {
+                        if (password_verify($password, $hashed_password)) {
+                            // Password is correct, so start a new session
+                            session_start();
+
+                            //place otp verification here
+                            
+                            // Store data in session variables
+                            $_SESSION["loggedin"] = true;
+                            $_SESSION["id"] = $id;
+                            $_SESSION["username"] = $email_address;
+                            $_SESSION["user"] = "examinee";
+
+                            header("location: index.php");
+                        } else {
+                            $_SESSION['login_err'] = 'Invalid email address or password';
+                        }
+                    }
+                } else {
+                    $_SESSION['login_err']  = 'Invalid email address or password';
+                }
+            } else {
+                echo "Oops! Something went wrong. Please try again later.";
+            }
+
+            // Close statement
+            mysqli_stmt_close($stmt);
+        }
+    }
+
+    // Close connection
+    mysqli_close($link);
+}
 ?>
+
+<style>
+
+</style>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -93,27 +172,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body class="main-bg-primary">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-5 mt-5">
-                <div class="card o-hidden border-0 shadow-lg my-5">
-                    <div class="card-body p-0">
-                        <div class="p-5">
-                            <div class="text-center">
-                                <h1 class="h4 text-gray-900 mb-4">Login your account</h1>
+        <div class="col-md-10 ml-auto col-xl-6 mr-auto">
+            <!-- Nav tabs -->
+            <div class="card p-3">
+                <div class="mt-2">
+                    <div class="text-center">
+                        <h1 class="h4 text-gray-900 mb-4">Login your account</h1>
+                    </div>
+                    <div class="text-center">
+                        <?php
+                        if (isset($_SESSION['login_err'])) {
+                        ?>
+                            <div class="alert alert-danger alert-dismissable">
+                                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                                <?php echo $_SESSION['login_err']; ?>
                             </div>
-                            <div class="text-center">
-                                <?php
-                                if (isset($_SESSION['login_err'])) {
-                                ?>
-                                    <div class="alert alert-danger alert-dismissable">
-                                        <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
-                                        <?php echo $_SESSION['login_err']; ?>
-                                    </div>
-                                <?php
-                                    unset($_SESSION['login_err']);
-                                }
-                                ?>
-                            </div>
+                        <?php
+                            unset($_SESSION['login_err']);
+                        }
+                        ?>
+                    </div>
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#home" role="tab">
+                                <i class="now-ui-icons objects_umbrella-13"></i> Login as Professor
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#profile" role="tab">
+                                <i class="now-ui-icons shopping_cart-simple"></i> Login as Examinee
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <!-- Tab panes -->
+                    <div class="tab-content text-center">
+                        <div class="tab-pane active" id="home" role="tabpanel">
                             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" class="user">
                                 <div class="form-group">
                                     <input type="text" name="username" class="form-control form-control-user" placeholder="Username">
@@ -121,7 +216,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <div class="form-group">
                                     <input type="password" name="password" class="form-control form-control-user" placeholder="Password">
                                 </div>
-                                <button type="submit" name="login" class="btn btn-primary btn-user btn-block">
+                                <button type="submit" name="login_professor" class="btn btn-primary btn-user btn-block">
                                     Login
                                 </button>
                             </form>
@@ -130,11 +225,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <span>Don't have an account? <a href="register.php">Sign up!</a></span>
                             </div>
                         </div>
+                        <div class="tab-pane" id="profile" role="tabpanel">
+                            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" class="user">
+                                <div class="form-group">
+                                    <input type="text" name="email_address" class="form-control form-control-user" placeholder="Email Address">
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" name="password" class="form-control form-control-user" placeholder="Password">
+                                </div>
+                                <button type="submit" name="login_examinee" class="btn btn-primary btn-user btn-block">
+                                    Login
+                                </button>
+                            </form>
+                            <hr>
+                            <div class="text-center">
+                                <span>Don't have an account? Contact your administrator.</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
             </div>
-
         </div>
 
     </div>

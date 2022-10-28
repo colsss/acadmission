@@ -88,13 +88,14 @@ $examinees = $examinee_result->fetch_all(MYSQLI_ASSOC);
                                                     <?php echo $second_course['course']; ?>
                                                 </td>
                                                 <td>
-                                                    <a href="#" class="btn btn-info btn-circle btn-sm">
+                                                    <a href="#" class="btn btn-info btn-circle btn-sm" data-toggle="modal" data-target="#update_examinee_<?php echo $examinee['id']; ?>">
                                                         <i class="fas fa-pencil-alt"></i>
                                                     </a>
                                                     <a href="#" class="btn btn-danger btn-circle btn-sm">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 </td>
+                                                <?php include 'update_examinee.php'; ?>
                                             </tr>
                                         <?php } ?>
                                     </tbody>

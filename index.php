@@ -10,6 +10,26 @@
         header("location: login.php");
         exit;
     }
+
+    //get questionnnires count
+    $questionnaires_sql = "SELECT * FROM questionnaires";
+    $questionnaires_result = mysqli_query($link, $questionnaires_sql);
+    $questionnaires = $questionnaires_result->fetch_all(MYSQLI_ASSOC);
+
+    //get examinees count
+    $examinee_sql = "SELECT * FROM examinee";
+    $examinee_result = mysqli_query($link, $examinee_sql);
+    $examinees = $examinee_result->fetch_all(MYSQLI_ASSOC);
+
+    //get courses count
+    $courses_sql = "SELECT * FROM courses";
+    $courses_result = mysqli_query($link, $courses_sql);
+    $courses = $courses_result->fetch_all(MYSQLI_ASSOC);
+
+    //get courses count
+    $department_sql = "SELECT * FROM department";
+    $department_result = mysqli_query($link, $department_sql);
+    $departments = $department_result->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -38,11 +58,10 @@
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
                     </div>
 
                     <!-- Content Row -->
+                    <?php  if (isset($_SESSION["user"]) && $_SESSION["user"] === "professor") { ?>
                     <div class="row">
 
                         <div class="col-xl-3 col-md-6 mb-4">
@@ -53,7 +72,7 @@
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                                 Questionnaires
                                             </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">2000</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo count($questionnaires); ?></div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-file fa-2x text-gray-300"></i>
@@ -69,9 +88,9 @@
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
                                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                               Students
+                                               Examinees
                                             </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">1000</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo count($examinees); ?></div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-users fa-2x text-gray-300"></i>
@@ -89,7 +108,7 @@
                                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                                Courses
                                             </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">1000</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo count($courses); ?></div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-star fa-2x text-gray-300"></i>
@@ -107,7 +126,7 @@
                                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                                Department
                                             </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo count($departments); ?></div>
                                         </div>
                                         <div class="col-auto">
                                             <i class="fas fa-building fa-2x text-gray-300"></i>
@@ -117,6 +136,65 @@
                             </div>
                         </div>
                     </div>
+                    <?php  } ?>
+
+                    <?php  if (isset($_SESSION["user"]) && $_SESSION["user"] === "examinee") { ?>
+                        <div class="row">
+                            <div class="col-xl-4 col-md-6 mb-4">
+                                <div class="card border-left-primary shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                    Questionnaires
+                                                </div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo count($questionnaires); ?></div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-file fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xl-4 col-md-6 mb-4">
+                                <div class="card border-left-info shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Courses
+                                                </div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo count($courses); ?></div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-star fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xl-4 col-md-6 mb-4">
+                                <div class="card border-left-warning shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                Department
+                                                </div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo count($departments); ?></div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-building fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php  } ?>
 
 
                     <!-- Content Row -->
@@ -164,96 +242,9 @@
                                 </div>
                             </div>
 
-                            <!-- Color System -->
-                            <div class="row">
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-primary text-white shadow">
-                                        <div class="card-body">
-                                            Primary
-                                            <div class="text-white-50 small">#172a52</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-success text-white shadow">
-                                        <div class="card-body">
-                                            Success
-                                            <div class="text-white-50 small">#1cc88a</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-info text-white shadow">
-                                        <div class="card-body">
-                                            Info
-                                            <div class="text-white-50 small">#36b9cc</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-warning text-white shadow">
-                                        <div class="card-body">
-                                            Warning
-                                            <div class="text-white-50 small">#f6c23e</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-danger text-white shadow">
-                                        <div class="card-body">
-                                            Danger
-                                            <div class="text-white-50 small">#e74a3b</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-secondary text-white shadow">
-                                        <div class="card-body">
-                                            Secondary
-                                            <div class="text-white-50 small">#858796</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-light text-black shadow">
-                                        <div class="card-body">
-                                            Light
-                                            <div class="text-black-50 small">#f8f9fc</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-dark text-white shadow">
-                                        <div class="card-body">
-                                            Dark
-                                            <div class="text-white-50 small">#5a5c69</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
 
                         <div class="col-lg-6 mb-4">
-
-                            <!-- Illustrations -->
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Illustrations</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="text-center">
-                                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
-                                            src="img/undraw_posting_photo.svg" alt="...">
-                                    </div>
-                                    <p>Add some quality, svg illustrations to your project courtesy of <a
-                                            target="_blank" rel="nofollow" href="https://undraw.co/">unDraw</a>, a
-                                        constantly updated collection of beautiful svg images that you can use
-                                        completely free and without attribution!</p>
-                                    <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on
-                                        unDraw &rarr;</a>
-                                </div>
-                            </div>
 
                             <!-- Approach -->
                             <div class="card shadow mb-4">

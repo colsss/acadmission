@@ -99,3 +99,8 @@ form.user .form-control-user {
 .account-settings .about p {
   font-size: 0.825rem;
 }
+
+  
+.btn-icon-split .icon {
+  padding: 0.75rem 0.75rem !important;
+}

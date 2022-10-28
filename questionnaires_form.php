@@ -17,30 +17,54 @@ $question_types_sql = "SELECT * FROM question_types";
 $question_types_result = mysqli_query($link, $question_types_sql);
 $question_types = $question_types_result->fetch_all(MYSQLI_ASSOC);
 
-//save settings
+$userId = $_SESSION["id"];
+//save settings and questionnaires
 if (isset($_POST['save_settings'])) {
-    $json['name'] = $_POST['name'];
-    $json['department'] = $_POST['department'];
-    $json['course'] = $_POST['course'];
-    $json['description'] = $_POST['description'];
-
-    echo json_encode($json);
-}
-
-if (isset($_POST['save_questions'])) {
-    $questions = $_POST['question'];
+    $settings['name'] = $_POST['name'];
+    $settings['course'] = $_POST['course'];
+    $settings['description'] = $_POST['description'];
+    $settings['choose_timer'] = $_POST['choose_timer'];
+    $settings['choose_timer_option'] = $_POST['choose_timer_option'];
+    $settings['activation_date'] = $_POST['activation_date'];
+    $jsonSettings = json_encode($settings);
+    
+    $question = $_POST['question'];
     $question_types = $_POST['question_types'];
-    $details = $_POST['details'];
+    $answer = $_POST['answer'];
+    $data = $_POST['data'];
     $points = $_POST['points'];
 
-    foreach ($question as $index => $questions) {
-        $s_title = $titles;
-        $s_user_id = $user_id;
-        $s_category = $category[$index];
-        $s_details = $details[$index];
-        $s_item_images = strtotime(date('y-m-d H:i')) . '_' . $user_id;
-        $s_token = $token[$index];
-        $s_status = 1;
+    $query = "INSERT INTO questionnaires(user_id, settings)
+            VALUES ('$userId', '$jsonSettings')";
+    $query_run = mysqli_query($link, $query);
+
+    if ($query_run) {
+        $questionnaires_id = $link->insert_id;
+        foreach ($question as $index => $questions) {
+            $question_id = $index + 1;
+            $question_type = $question_types[$index];
+            $data_answer = $answer[$index];
+            $data_point = $points[$index];
+
+            $insertValuesSQL = '';
+            foreach ($data as $id => $value) {
+                $option = $data[$id];
+                $insertValuesSQL .= "('" . $question_id . "', '" . $question_type . "', '" . $option . "'),";
+            }
+
+            if (!empty($insertValuesSQL)) {
+                $option_query = "INSERT INTO options(question_id, question_type, options)
+                    VALUES $insertValuesSQL";
+                mysqli_query($link, $option_query);
+            }
+
+            $question_query = "INSERT INTO questions(user_id, questionnaires_id, question_id, question, question_type, answer, points)
+                VALUES ('$userId', '$questionnaires_id', '$question_id', '$questions', '$question_type', '$data_answer', '$data_point')";
+            mysqli_query($link, $question_query);
+        } 
+
+        $_SESSION['success_status'] = "You have successfully added a set of questionnaires";
+        header("location: manage_questionnaires.php");
     }
 }
 ?>
@@ -50,7 +74,7 @@ if (isset($_POST['save_questions'])) {
 
 <?php include 'includes/header.php'; ?>
 
-<body id="page-top">
+<body id="page-top" data-spy="scroll" data-target="#navbar-example">
 
     <div id="wrapper">
 
@@ -62,28 +86,11 @@ if (isset($_POST['save_questions'])) {
                 <?php include 'includes/navbar.php'; ?>
 
                 <div class="container-fluid">
-
                     <div class="row p-2">
-                        <div class="col-md-3">
-                            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                                <a class="nav-link active p-3" id="v-pills-home-tab" data-toggle="pill" href="#basic-settings" role="tab" aria-controls="v-pills-home" aria-selected="true">
-                                    <i class="fas fa-cog"></i>
-                                    Basic Settings
-                                </a>
-                                <a class="nav-link p-3" id="v-pills-profile-tab" data-toggle="pill" href="#question-manager" role="tab" aria-controls="v-pills-profile" aria-selected="false">
-                                    <i class="fas fa-sliders-h"></i>
-                                    Questions Manager
-                                </a>
-                                <a class="nav-link p-3" id="v-pills-settings-tab" data-toggle="pill" href="#time-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">
-                                    <i class="fas fa-clock"></i>
-                                    Time Settings
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col-md-9" style="overflow: auto;">
+                        <div class="col-md-12" style="overflow: auto;">
                             <div class="tab-content" id="v-pills-tabContent">
                                 <div class="tab-pane fade show active" id="basic-settings" role="tabpanel" aria-labelledby="v-pills-home-tab">
-                                    <h5 class="text-gray-800">Basic Settings</h5>
+                                    <h5 class="text-gray-800">Questions Manager</h5>
                                     <div class="card">
                                         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
                                             <div class="card-body">
@@ -92,20 +99,6 @@ if (isset($_POST['save_questions'])) {
                                                         <div class="form-group">
                                                             <label for="course">Questionnaire's Name</label>
                                                             <input type="text" name="name" class="form-control" id="name" required>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col-md-12 col-sm-8">
-                                                        <div class="form-group">
-                                                            <label for="department">Department</label>
-                                                            <select name="department" id="department" class="form-control" required>
-                                                                <option value="" selected>Choose Department...</option>
-                                                                <?php foreach ($departments as $department) { ?>
-                                                                    <option value="<?php echo $department['id']; ?>"><?php echo $department['department']; ?></option>
-                                                                <?php } ?>
-                                                            </select>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -132,80 +125,68 @@ if (isset($_POST['save_questions'])) {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row float-right">
+                                                <label>Select test duration measuring method:</label>
+                                                <div class="row">
                                                     <div class="col-md-12 col-sm-8">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="choose_timer" value="1" id="flexRadioDefault1" checked>
+                                                            <label class="form-check-label">
+                                                                Time to complete the test: (hh:mm):
+                                                                <input type="time" name="choose_timer_option[]" class="form-control" id="choose_timer_option">
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-check mt-4">
+                                                            <input class="form-check-input" type="radio" name="choose_timer" value="2" id="flexRadioDefault2">
+                                                            <label class="form-check-label">
+                                                                Time limit for each test question (mm:ss):
+                                                                <input type="time" name="choose_timer_option[]" class="form-control" id="choose_timer_option" min="00:00:00" max="20:00:00">
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row mt-5">
+                                                    <div class="col-md-4 col-sm-8">
                                                         <div class="form-group">
-                                                            <button type="submit" name="save_settings" class="btn btn-success">Save</button>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Test activation date</label>
+                                                                <div class="form-group">
+                                                                    <div class='input-group date'>
+                                                                        <input type='date' class="form-control" name="activation_date" />
+                                                                        <span class="input-group-addon">
+                                                                            <span class="fa fas-calendar"></span>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="question-manager" role="tabpanel">
-                                    <h5 class="text-gray-800">Add Questions</h5>
 
-                                    <button id="add-more-items" type="button" class="btn btn-primary mb-4">
-                                        <i class="fas fa-plus"></i>
-                                        Add More Question
-                                    </button>
-                                    <div>
-                                        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
-                                            <div id="content-panel"></div>
-                                            <div class="float-right">
-                                                <div class="col-md-12 col-sm-8">
-                                                    <div class="form-group">
-                                                        <button type="submit" name="save_questions" class="btn btn-success">Save</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div class="tab-pane fade" id="time-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
-                                    <h5 class="text-gray-800">Time Settings</h5>
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <label>Select test duration measuring method:</label>
-                                            <div class="row">
-                                                <div class="col-md-12 col-sm-8">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" checked>
-                                                        <label class="form-check-label" for="flexRadioDefault1">
-                                                            Time to complete the test: (hh:mm):
-                                                            <input type="text" name="department" class="form-control" id="department" required>
-                                                        </label>
-                                                    </div>
-                                                    <div class="form-check mt-4">
-                                                        <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2">
-                                                        <label class="form-check-label" for="flexRadioDefault2">                                                    
-                                                            Time limit for each test question (mm:ss):
-                                                            <input type="text" name="department" class="form-control" id="department" required>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
 
-                                            <div class="row mt-5">
-                                                <div class="col-md-12 col-sm-8">
-                                                    <div class="form-group">
-                                                        <div class="mb-3">
-                                                            <label for="exampleFormControlInput1" class="form-label">Test activation date</label>
-                                                            <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="">
+                                                <hr/>
+                                                <div class="mt-4">
+                                                    <h5 class="text-gray-800">Add Questions</h5>
+
+                                                    <button id="add-more-items" type="button" class="btn btn-primary mb-4">
+                                                        <i class="fas fa-plus"></i>
+                                                        Add More Question
+                                                    </button>
+                                                    <div>
+                                                        <div id="content-panel"></div>
+                                                    </div>
+
+                                                    <div class="row float-right">
+                                                        <div class="col-md-12 col-sm-8">
+                                                            <div class="form-group">
+                                                                <button type="submit" name="save_settings" class="btn btn-success next">Save</button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <div class="row pull-right">
-                                                <div class="col-md-12 col-sm-8">
-                                                    <div class="form-group">
-                                                        <a id="v-pills-profile-tab" data-toggle="pill" href="#question-manager" role="tab" aria-controls="v-pills-profile" class="btn btn-success">Save</a>
-                                                    </div>
-                                                </div>
                                             </div>
-                                        </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -220,10 +201,15 @@ if (isset($_POST['save_questions'])) {
         <i class="fas fa-angle-up"></i>
     </a>
 
+
     <?php include 'includes/scripts.php'; ?>
     <?php include 'includes/background.php'; ?>
 
     <script>
+        $(function() {
+            $('#datetimepicker1').datetimepicker();
+        });
+
         var addCols = function(num, cardLength) {
 
             for (var i = 1; i <= num; i++) {
@@ -294,12 +280,12 @@ if (isset($_POST['save_questions'])) {
                 var $target = $(this).parents('.col-sm-12');
                 var selected = $target.find('select').find("option:selected").val();
                 var $questionNumber = $target.find("#question-number").val();
-                var $contentPanel = $target.find('div#child-panel-'+ $questionNumber);
+                var $contentPanel = $target.find('div#child-panel-' + $questionNumber);
 
                 var $points = $('<div class="col-md-6 mt-2">\
                     <div class="mb-3">\
                         <label class="form-label">Points for correct answer</label>\
-                        <input type="number" class="form-control" name="points[]" placeholder="">\
+                        <input type="number" class="form-control" name="points[]" placeholder="" required>\
                     </div>\
                 </div>');
 
@@ -307,21 +293,26 @@ if (isset($_POST['save_questions'])) {
                 //Abstract
                 if (selected == 1) {
                     var $content = $('<div class="col-md-12">\
-                        <div class="form-check">\
-                            <input class="form-check-input" type="radio" name="abstract" value="1" checked>\
-                            <input type="file" class="form-control mb-3" placeholder="Option 1">\
+                        <div class="form-group">\
+                            <input type="file" name="data[]" class="form-control mb-3" placeholder="Option 1" required>\
                         </div>\
-                        <div class="form-check">\
-                            <input class="form-check-input" type="radio" name="abstract" value="2">\
-                            <input type="file" class="form-control mb-3" placeholder="Option 2">\
+                        <div class="form-group">\
+                            <input type="file" name="data[]" class="form-control mb-3" placeholder="Option 2" required>\
                         </div>\
-                        <div class="form-check">\
-                            <input class="form-check-input" type="radio" name="abstract" value="3">\
-                            <input type="file" class="form-control mb-3" placeholder="Option 3">\
+                        <div class="form-group">\
+                            <input type="file" name="data[]" class="form-control mb-3" placeholder="Option 3" required>\
                         </div>\
-                        <div class="form-check">\
-                            <input class="form-check-input" type="radio" name="abstract" value="4">\
-                            <input type="file" class="form-control mb-3" placeholder="Option 4">\
+                        <div class="form-group">\
+                            <input type="file" name="data[]" class="form-control mb-3" placeholder="Option 4" required>\
+                        </div>\
+                        <div class="form-group">\
+                            <label for="answer">Answer</label>\
+                            <select name="answer[]" class="form-control" required>\
+                                <option value="1" selected>Option 1</option>\
+                                <option value="2">Option 2</option>\
+                                <option value="3">Option 3</option>\
+                                <option value="4">Option 4</option>\
+                            </select>\
                         </div>\
                     </div>');
                     $content.appendTo($contentPanel);
@@ -329,21 +320,26 @@ if (isset($_POST['save_questions'])) {
                     //Multiple Choices
                 } else if (selected == 2) {
                     var $content = $('<div class="col-md-12">\
-                        <div class="form-check">\
-                            <input class="form-check-input" type="radio" name="multiple_choices" value="1" checked>\
-                            <input type="text" class="form-control mb-3" placeholder="Option 1">\
+                        <div class="form-group">\
+                            <input type="text" name="data[]" class="form-control mb-3" placeholder="Option 1" required>\
                         </div>\
-                        <div class="form-check">\
-                            <input class="form-check-input" type="radio" name="multiple_choices" value="2">\
-                            <input type="text" class="form-control mb-3" placeholder="Option 2">\
+                        <div class="form-group">\
+                            <input type="text" name="data[]" class="form-control mb-3" placeholder="Option 2" required>\
                         </div>\
-                        <div class="form-check">\
-                            <input class="form-check-input" type="radio" name="multiple_choices" value="3">\
-                            <input type="text" class="form-control mb-3" placeholder="Option 3">\
+                        <div class="form-group">\
+                            <input type="text" name="data[]" class="form-control mb-3" placeholder="Option 3" required>\
                         </div>\
-                        <div class="form-check">\
-                            <input class="form-check-input" type="radio" name="multiple_choices" value="4">\
-                            <input type="text" class="form-control mb-3" placeholder="Option 4">\
+                        <div class="form-group">\
+                            <input type="text" name="data[]" class="form-control mb-3" placeholder="Option 4" required>\
+                        </div>\
+                        <div class="form-group">\
+                            <label for="answer">Answer</label>\
+                            <select name="answer[]" class="form-control" required>\
+                                <option value="1" selected>Option 1</option>\
+                                <option value="2">Option 2</option>\
+                                <option value="3">Option 3</option>\
+                                <option value="4">Option 4</option>\
+                            </select>\
                         </div>\
                     </div>');
                     $content.appendTo($contentPanel);
@@ -353,7 +349,7 @@ if (isset($_POST['save_questions'])) {
                     var $content = $('<div class="col-md-12 mt-4">\
                         <div class="mb-3">\
                             <label for="Identification" class="form-label">Answer</label>\
-                            <input type="text" class="form-control" name="identification" id="Identification">\
+                            <input name="answer[]" type="text" class="form-control" name="identification" id="Identification">\
                         </div>\
                     </div>');
                     $content.appendTo($contentPanel);
@@ -361,33 +357,19 @@ if (isset($_POST['save_questions'])) {
                     //True or False
                 } else if (selected == 4) {
                     var $content = $('<div class="col-md-12">\
-                        <div class="form-check">\
-                            <input class="form-check-input" type="radio" name="true_or_false" id="true-or-false" value="1" checked>\
-                            <label class="form-check-label" for="true-or-false">\
-                                TRUE\
-                            </label>\
-                        </div>\
-                        <div class="form-check">\
-                            <input class="form-check-input" type="radio" name="true_or_false" id="true-or-false" value="2">\
-                            <label class="form-check-label" for="flexRadioDefault2">\
-                                FALSE\
-                            </label>\
-                        </div>\
-                    </div>');
-                    $content.appendTo($contentPanel);
-                    $points.appendTo($contentPanel);
-                    //Essay
-                } else if (selected == 5) {
-                    var $content = $('<div class="col-md-12">\
-                        <div class="mb-3">\
-                            <label for="essay" class="form-label">Answer</label>\
-                            <textarea class="form-control" name="essay" id="essay" rows="3"></textarea>\
+                        <div class="form-group">\
+                            <label for="answer">Answer</label>\
+                            <select name="answer[]" class="form-control" required>\
+                                <option value="1" selected>TRUE</option>\
+                                <option value="2">FALSE</option>\
+                            </select>\
                         </div>\
                     </div>');
                     $content.appendTo($contentPanel);
                     $points.appendTo($contentPanel);
                 } 
             });
+
         };
 
         $(document).ready(function() {
@@ -399,6 +381,13 @@ if (isset($_POST['save_questions'])) {
             addCols('1', $('.main-card').length);
             return false;
         });
+
+        $('#date').datepicker({
+            todayHighlight: true,
+            format: 'dd/mm/yyyy',
+            startDate: new Date()   
+        });
+
     </script>
 
 </body>

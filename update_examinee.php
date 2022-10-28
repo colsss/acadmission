@@ -1,69 +1,16 @@
-<?php 
-    // Include config file
-    require_once "includes/config.php";
-
-    // Initialize the session
-    session_start();
-
-    $temp_password = substr(md5(uniqid(rand(1,6))), 0, 8);
-
-    $courses_sql = "SELECT * FROM courses";
-    $courses_result = mysqli_query($link, $courses_sql);
-    $courses = $courses_result->fetch_all(MYSQLI_ASSOC);
-
-    if (isset($_POST['save_examinee'])) {
-        $last_name = $_POST['last_name'];
-        $first_name = $_POST['first_name'];
-        $middle_name = $_POST['middle_name'];
-        $address = $_POST['address'];
-        $gender = $_POST['gender'];
-        $email_address = $_POST['email_address'];
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-        $phone_number = $_POST['phone_number'];
-        $first_choice = $_POST['first_choice'];
-        $second_choice = $_POST['second_choice'];
-        $status = 1;
-
-        $query = "INSERT INTO examinee(last_name, first_name, middle_name, address, gender, email_address, password, phone_number, first_choice, second_choice, status)
-                VALUES ('$last_name', '$first_name', '$middle_name', '$address', '$gender', '$email_address' , '$password', '$phone_number', '$first_choice' , '$second_choice', '$status')";
-        $query_run = mysqli_query($link, $query);
-
-        if ($query_run) {
-            $_SESSION['success_status'] = "You have successfully added a new examinee.";
-            header("location: manage_examinee.php");
-        }
-    }
-?>
-
-
-<!DOCTYPE html>
-<html lang="en">
-
-<?php include 'includes/header.php'; ?>
-
-<body id="page-top">
-
-    <div id="wrapper">
-
-        <?php include 'includes/sidebar.php'; ?>
-        <div id="content-wrapper" class="d-flex flex-column">
-
-            <div id="content">
-
-                <?php include 'includes/navbar.php'; ?>
-
-                <div class="container-fluid">
-
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Add New Examinee</h1>
-                    </div>
-
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Add Examinee</h6>
-                        </div>
-                        <div class="card-body">
-                            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
+<!-- Update Examinee Modal-->
+<div class="modal fade" id="update_examinee_<?php echo $examinee['id']?>" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Examinee</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
+                <div class="modal-body">
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
@@ -173,41 +120,14 @@
                                     </div>
                                 </div>
                             </form>
-                        </div>
-                    </div>
-
                 </div>
-            </div>
-
-            <?php include 'includes/footer.php'; ?>
-        </div>
-    </div>
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
+                <div class="modal-footer">
+                    <button type="submit" name="update_course" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Update
                     </button>
                 </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
-
-    <?php include 'includes/scripts.php'; ?>
-    <?php include 'includes/background.php'; ?>
-
-</body>
-
-</html>
+</div>

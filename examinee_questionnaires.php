@@ -9,7 +9,7 @@ $questionnaires_sql = "SELECT * FROM questionnaires";
 $questionnaires_result = mysqli_query($link, $questionnaires_sql);
 $questionnaires = $questionnaires_result->fetch_all(MYSQLI_ASSOC);
 
-// print_r($questionnaires);
+print_r($questionnaires);
 ?>
 
 <!DOCTYPE html>
@@ -31,16 +31,7 @@ $questionnaires = $questionnaires_result->fetch_all(MYSQLI_ASSOC);
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-4 text-gray-800">Manage Questionnaries</h1>
-
-                    <div class="mb-3">
-                        <a href="questionnaires_form.php" class="btn btn-success btn-icon-split">
-                            <span class="icon text-white-50">
-                                <i class="fas fa-plus"></i>
-                            </span>
-                            <span class="text">Add New Questionnaries</span>
-                        </a>
-                    </div>
+                    <h1 class="h3 mb-4 text-gray-800">Examinee Questionnaries</h1>
 
                     <div class="row">
                         <?php foreach($questionnaires as $questionnaire) {
@@ -89,17 +80,21 @@ $questionnaires = $questionnaires_result->fetch_all(MYSQLI_ASSOC);
                                         </div>
                                        
 
-                                        <div class="mt-4 float-right">
+                                        <div class="mt-4">
                                             <small><strong>Date Added:</strong>
                                             <?php echo date('m-d-Y', strtotime($questionnaire['date_added'])); ?></small>
                                         </div>
+                                        <div class="mt-1">
+                                            <small><strong>Activated until:</strong>
+                                            <?php print date('m-d-Y', strtotime($settings->{'activation_date'})); ?></small>
+                                        </div>
                                     </div>
                                     <div class="card-footer">
-                                        <a href="questionnaires_info.php?questionnaire_id=<?php echo $questionnaire['id'];  ?>" class="btn btn-primary btn-sm float-right">
+                                        <a href="examination.php?questionnaire_id=<?php echo $questionnaire['id'];  ?>" class="btn btn-success btn-sm float-right">
                                             <span class="icon text-white-50">
-                                                <i class="fas fa-eye"></i>
+                                                <i class="fas fa-play"></i>
                                             </span>
-                                            <span class="text">View</span>
+                                            <span class="text">Start</span>
                                         </a>
                                     </div>
                                 </div>
