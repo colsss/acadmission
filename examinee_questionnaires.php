@@ -9,7 +9,7 @@ $questionnaires_sql = "SELECT * FROM questionnaires";
 $questionnaires_result = mysqli_query($link, $questionnaires_sql);
 $questionnaires = $questionnaires_result->fetch_all(MYSQLI_ASSOC);
 
-print_r($questionnaires);
+// print_r($questionnaires);
 ?>
 
 <!DOCTYPE html>
