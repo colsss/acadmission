@@ -62,6 +62,12 @@
                 </div>
             </div>
         </li>
+
+        <li class="nav-item <?php if ($_SERVER['PHP_SELF'] == '/acadmission/examination_result_summary.php') { ?>active <?php } ?>">
+            <a class="nav-link" href="examination_result_summary.php">
+                <i class="fas fa-fw fa-file"></i>
+                <span>Examination Result</span></a>
+        </li>
         
         <!-- Sidebar Toggler (Sidebar) -->
         <div class="text-center d-none d-md-inline">
@@ -89,6 +95,12 @@
                     <a class="collapse-item" href="examinee_questionnaires.php">View Questionnaires</a>
                 </div>
             </div>
+        </li>
+
+        <li class="nav-item <?php if ($_SERVER['PHP_SELF'] == '/acadmission/examination_result.php') { ?>active <?php } ?>">
+            <a class="nav-link" href="examination_result.php">
+                <i class="fas fa-fw fa-file"></i>
+                <span>Examination Result</span></a>
         </li>
     <?php } ?>
 

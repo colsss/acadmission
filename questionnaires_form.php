@@ -131,15 +131,15 @@ if (isset($_POST['save_settings'])) {
                                                         <div class="form-check">
                                                             <input class="form-check-input" type="radio" name="choose_timer" value="1" id="flexRadioDefault1" checked>
                                                             <label class="form-check-label">
-                                                                Time to complete the test: (hh:mm):
-                                                                <input type="time" name="choose_timer_option[]" class="form-control" id="choose_timer_option">
+                                                                Time to complete the test: (mm:ss):
+                                                                <input type="number" name="choose_timer_option[]" class="form-control" id="choose_timer_option" placeholder="minutes">
                                                             </label>
                                                         </div>
                                                         <div class="form-check mt-4">
                                                             <input class="form-check-input" type="radio" name="choose_timer" value="2" id="flexRadioDefault2">
                                                             <label class="form-check-label">
                                                                 Time limit for each test question (mm:ss):
-                                                                <input type="time" name="choose_timer_option[]" class="form-control" id="choose_timer_option" min="00:00:00" max="20:00:00">
+                                                                <input type="number" name="choose_timer_option[]" class="form-control" id="choose_timer_option" min="00:00:00" max="20:00:00" placeholder="minutes">
                                                             </label>
                                                         </div>
                                                     </div>

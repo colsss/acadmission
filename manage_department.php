@@ -60,7 +60,7 @@ if (isset($_POST['update_department'])) {
                     <h1 class="h3 mb-4 text-gray-800">Manage Department</h1>
 
                     <div class="mb-3">
-                        <a href="#" class="btn btn-success btn-icon-split" data-toggle="modal" data-target="#add_department">
+                        <a href="#" class="btn btn-success" data-toggle="modal" data-target="#add_department">
                             <span class="icon text-white-50">
                                 <i class="fas fa-plus"></i>
                             </span>

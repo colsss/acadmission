@@ -34,7 +34,7 @@ $questionnaires = $questionnaires_result->fetch_all(MYSQLI_ASSOC);
                     <h1 class="h3 mb-4 text-gray-800">Manage Questionnaries</h1>
 
                     <div class="mb-3">
-                        <a href="questionnaires_form.php" class="btn btn-success btn-icon-split">
+                        <a href="questionnaires_form.php" class="btn btn-success">
                             <span class="icon text-white-50">
                                 <i class="fas fa-plus"></i>
                             </span>

@@ -8,8 +8,6 @@ session_start();
 $questionnaires_sql = "SELECT * FROM questionnaires";
 $questionnaires_result = mysqli_query($link, $questionnaires_sql);
 $questionnaires = $questionnaires_result->fetch_all(MYSQLI_ASSOC);
-
-// print_r($questionnaires);
 ?>
 
 <!DOCTYPE html>
@@ -32,6 +30,20 @@ $questionnaires = $questionnaires_result->fetch_all(MYSQLI_ASSOC);
 
                     <!-- Page Heading -->
                     <h1 class="h3 mb-4 text-gray-800">Examinee Questionnaries</h1>
+
+                    <div class="mt-1">
+                        <?php
+                        if (isset($_SESSION['success_status'])) {
+                        ?>
+                            <div class="alert alert-success alert-dismissable">
+                                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                                <?php echo $_SESSION['success_status']; ?>
+                            </div>
+                        <?php
+                            unset($_SESSION['success_status']);
+                        }
+                        ?>
+                    </div>
 
                     <div class="row">
                         <?php foreach($questionnaires as $questionnaire) {
