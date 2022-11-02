@@ -15,14 +15,14 @@ require_once "includes/config.php";
 $username = $password = "";
 $username_err = $password_err = $login_err = "";
 
-//Student Login
-if (isset($_POST['login_examinee'])) {
+//Professor Login
+if (isset($_POST['login_professor'])) {
 
-    // Check if email address is empty
-    if (empty(trim($_POST["email_address"]))) {
-        $email_address_err = "Please enter email address.";
+    // Check if username is empty
+    if (empty(trim($_POST["username"]))) {
+        $username_err = "Please enter username.";
     } else {
-        $email_address = trim($_POST["email_address"]);
+        $username = trim($_POST["username"]);
     }
 
     // Check if password is empty
@@ -33,16 +33,16 @@ if (isset($_POST['login_examinee'])) {
     }
 
     // Validate credentials
-    if (empty($email_address_err) && empty($password_err)) {
+    if (empty($username_err) && empty($password_err)) {
         // Prepare a select statement
-        $sql = "SELECT id, email_address, password FROM examinee WHERE email_address = ?";
+        $sql = "SELECT id, username, password, profile FROM users WHERE username = ?";
 
         if ($stmt = mysqli_prepare($link, $sql)) {
             // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "s", $param_email_address);
+            mysqli_stmt_bind_param($stmt, "s", $param_username);
 
             // Set parameters
-            $param_email_address = $email_address;
+            $param_username = $username;
 
             // Attempt to execute the prepared statement
             if (mysqli_stmt_execute($stmt)) {
@@ -52,7 +52,7 @@ if (isset($_POST['login_examinee'])) {
                 // Check if username exists, if yes then verify password
                 if (mysqli_stmt_num_rows($stmt) == 1) {
                     // Bind result variables
-                    mysqli_stmt_bind_result($stmt, $id, $email_address, $hashed_password);
+                    mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password, $profile);
                     if (mysqli_stmt_fetch($stmt)) {
                         if (password_verify($password, $hashed_password)) {
                             // Password is correct, so start a new session
@@ -63,16 +63,17 @@ if (isset($_POST['login_examinee'])) {
                             // Store data in session variables
                             $_SESSION["loggedin"] = true;
                             $_SESSION["id"] = $id;
-                            $_SESSION["username"] = $email_address;
-                            $_SESSION["user"] = "examinee";
+                            $_SESSION["username"] = $username;
+                            $_SESSION["profile"] = $profile;
+                            $_SESSION["user"] = "professor";
 
                             header("location: index.php");
                         } else {
-                            $_SESSION['login_err'] = 'Invalid email address or password';
+                            $_SESSION['login_err'] = 'Invalid username or password';
                         }
                     }
                 } else {
-                    $_SESSION['login_err']  = 'Invalid email address or password';
+                    $_SESSION['login_err']  = 'Invalid username or password';
                 }
             } else {
                 echo "Oops! Something went wrong. Please try again later.";
@@ -123,18 +124,18 @@ if (isset($_POST['login_examinee'])) {
                 <div class="card-body">
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST" class="user">
                         <div class="form-group">
-                            <input type="text" name="email_address" class="form-control form-control-user" placeholder="Email Address">
+                            <input type="text" name="username" class="form-control form-control-user" placeholder="Username">
                         </div>
                         <div class="form-group">
                             <input type="password" name="password" class="form-control form-control-user" placeholder="Password">
                         </div>
-                        <button type="submit" name="login_examinee" class="btn btn-primary btn-user btn-block">
+                        <button type="submit" name="login_professor" class="btn btn-primary btn-user btn-block">
                             Login
                         </button>
                     </form>
                     <hr>
                     <div class="text-center">
-                        <span>Don't have an account? Contact your administrator.</span>
+                        <span>Don't have an account? <a href="register.php">Sign up!</a></span>
                     </div>
                 </div>
             </div>

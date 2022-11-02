@@ -50,6 +50,8 @@ if (isset($_POST['save_settings'])) {
             $query_status = mysqli_query($link, $question_query);
 
             if ($query_status) {
+                //add checking for  different question type
+
                 $insertValuesSQL = '';
                 foreach ($_POST[$question_id] as $id => $value) {
                     $option = $_POST[$question_id][$id];
@@ -294,16 +296,16 @@ if (isset($_POST['save_settings'])) {
                 if (selected == 1) {
                     var $content = $('<div class="col-md-12">\
                         <div class="form-group">\
-                            <input type="file" name="data[]" class="form-control mb-3" placeholder="Option 1" required>\
+                            <input type="file" name="option" class="form-control mb-3" placeholder="Option 1" required>\
                         </div>\
                         <div class="form-group">\
-                            <input type="file" name="data[]" class="form-control mb-3" placeholder="Option 2" required>\
+                            <input type="file" name="option" class="form-control mb-3" placeholder="Option 2" required>\
                         </div>\
                         <div class="form-group">\
-                            <input type="file" name="data[]" class="form-control mb-3" placeholder="Option 3" required>\
+                            <input type="file" name="option" class="form-control mb-3" placeholder="Option 3" required>\
                         </div>\
                         <div class="form-group">\
-                            <input type="file" name="data[]" class="form-control mb-3" placeholder="Option 4" required>\
+                            <input type="file" name="option" class="form-control mb-3" placeholder="Option 4" required>\
                         </div>\
                         <div class="form-group">\
                             <label for="answer">Answer</label>\
@@ -316,7 +318,7 @@ if (isset($_POST['save_settings'])) {
                         </div>\
                     </div>');
                     $content.appendTo($contentPanel);
-                    $('input').attr("name", "data[" + $questionNumber +"][option][]")
+                    $('input[name="option"]').attr("name",  $questionNumber+ "[]");
                     $points.appendTo($contentPanel);
                     //Multiple Choices
                 } else if (selected == 2) {
