@@ -27,11 +27,10 @@ if (isset($_POST['save_settings'])) {
     $settings['choose_timer_option'] = $_POST['choose_timer_option'];
     $settings['activation_date'] = $_POST['activation_date'];
     $jsonSettings = json_encode($settings);
-    
+
     $question = $_POST['question'];
     $question_types = $_POST['question_types'];
     $answer = $_POST['answer'];
-    $data = $_POST['data'];
     $points = $_POST['points'];
 
     $query = "INSERT INTO questionnaires(user_id, settings)
@@ -46,22 +45,23 @@ if (isset($_POST['save_settings'])) {
             $data_answer = $answer[$index];
             $data_point = $points[$index];
 
-            $insertValuesSQL = '';
-            foreach ($data as $id => $value) {
-                $option = $data[$id];
-                $insertValuesSQL .= "('" . $question_id . "', '" . $question_type . "', '" . $option . "'),";
-            }
-
-            if (!empty($insertValuesSQL)) {
-                $option_query = "INSERT INTO options(question_id, question_type, options)
-                    VALUES $insertValuesSQL";
-                mysqli_query($link, $option_query);
-            }
-
             $question_query = "INSERT INTO questions(user_id, questionnaires_id, question_id, question, question_type, answer, points)
                 VALUES ('$userId', '$questionnaires_id', '$question_id', '$questions', '$question_type', '$data_answer', '$data_point')";
-            mysqli_query($link, $question_query);
-        } 
+            $query_status = mysqli_query($link, $question_query);
+
+            if ($query_status) {
+                $insertValuesSQL = '';
+                foreach ($_POST[$question_id] as $id => $value) {
+                    $option = $_POST[$question_id][$id];
+                    $insertValuesSQL .= "('" . $questionnaires_id . "', '" . $question_id . "', '" . $question_type . "', '" . $option . "'),";
+                }
+    
+                if (!empty($insertValuesSQL)) {
+                    $insertValuesSQL = trim($insertValuesSQL, ',');
+                    $insert = $link->query("INSERT INTO options (questionnaires_id, question_id, question_type, options) VALUES $insertValuesSQL");
+                }
+            }           
+        }
 
         $_SESSION['success_status'] = "You have successfully added a set of questionnaires";
         header("location: manage_questionnaires.php");
@@ -164,14 +164,10 @@ if (isset($_POST['save_settings'])) {
                                                 </div>
 
 
-                                                <hr/>
+                                                <hr />
                                                 <div class="mt-4">
                                                     <h5 class="text-gray-800">Add Questions</h5>
 
-                                                    <button id="add-more-items" type="button" class="btn btn-primary mb-4">
-                                                        <i class="fas fa-plus"></i>
-                                                        Add More Question
-                                                    </button>
                                                     <div>
                                                         <div id="content-panel"></div>
                                                     </div>
@@ -179,6 +175,10 @@ if (isset($_POST['save_settings'])) {
                                                     <div class="row float-right">
                                                         <div class="col-md-12 col-sm-8">
                                                             <div class="form-group">
+                                                                <button id="add-more-items" type="button" class="btn btn-primary">
+                                                                    <i class="fas fa-plus"></i>
+                                                                    Add More Question
+                                                                </button>
                                                                 <button type="submit" name="save_settings" class="btn btn-success next">Save</button>
                                                             </div>
                                                         </div>
@@ -316,21 +316,22 @@ if (isset($_POST['save_settings'])) {
                         </div>\
                     </div>');
                     $content.appendTo($contentPanel);
+                    $('input').attr("name", "data[" + $questionNumber +"][option][]")
                     $points.appendTo($contentPanel);
                     //Multiple Choices
                 } else if (selected == 2) {
                     var $content = $('<div class="col-md-12">\
                         <div class="form-group">\
-                            <input type="text" name="data[]" class="form-control mb-3" placeholder="Option 1" required>\
+                            <input type="text" name="option" class="form-control mb-3" placeholder="Option 1" required>\
                         </div>\
                         <div class="form-group">\
-                            <input type="text" name="data[]" class="form-control mb-3" placeholder="Option 2" required>\
+                            <input type="text" name="option" class="form-control mb-3" placeholder="Option 2" required>\
                         </div>\
                         <div class="form-group">\
-                            <input type="text" name="data[]" class="form-control mb-3" placeholder="Option 3" required>\
+                            <input type="text" name="option" class="form-control mb-3" placeholder="Option 3" required>\
                         </div>\
                         <div class="form-group">\
-                            <input type="text" name="data[]" class="form-control mb-3" placeholder="Option 4" required>\
+                            <input type="text" name="option" class="form-control mb-3" placeholder="Option 4" required>\
                         </div>\
                         <div class="form-group">\
                             <label for="answer">Answer</label>\
@@ -343,6 +344,7 @@ if (isset($_POST['save_settings'])) {
                         </div>\
                     </div>');
                     $content.appendTo($contentPanel);
+                    $('input[name="option"]').attr("name",  $questionNumber+ "[]");
                     $points.appendTo($contentPanel);
                     //Identification
                 } else if (selected == 3) {
@@ -367,7 +369,7 @@ if (isset($_POST['save_settings'])) {
                     </div>');
                     $content.appendTo($contentPanel);
                     $points.appendTo($contentPanel);
-                } 
+                }
             });
 
         };
@@ -385,9 +387,8 @@ if (isset($_POST['save_settings'])) {
         $('#date').datepicker({
             todayHighlight: true,
             format: 'dd/mm/yyyy',
-            startDate: new Date()   
+            startDate: new Date()
         });
-
     </script>
 
 </body>

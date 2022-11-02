@@ -30,7 +30,7 @@ foreach ($questions as $question) {
 
     $question_id = $question['question_id'];
     $option_sql = "SELECT * FROM options 
-           WHERE question_id = $question_id";
+           WHERE questionnaires_id = $questionnaire_id && question_id = $question_id";
     $options_result = mysqli_query($link, $option_sql);
     $options = $options_result->fetch_all(MYSQLI_ASSOC);
 
@@ -67,8 +67,8 @@ if (isset($_POST['complete_exam'])) {
 
     if ($query_run) {
         $examination_result_id = $link->insert_id;
-        $examination_result_query = "INSERT INTO examination_result_details(examination_result_id, examinee_id, exam_grade, correct_answer, total_questions, correct_answer_points, total_points)
-            VALUES ('$examination_result_id', '$examinee_id', '$exam_grade', '$correct_answer', '$total_questions', '$correct_answer_points', '$total_points')";
+        $examination_result_query = "INSERT INTO exam_result_details(exam_result_id, examinee_id, exam_grade, correct_answer, total_questions, correct_answer_points, total_points)
+            VALUES ('$examination_result_id', '$examinee_id', '$grade ', '$correct_answer', '$total_questions', '$correct_answer_points', '$total_points')";
         $query_run = mysqli_query($link, $examination_result_query);
 
         $_SESSION['success_status'] = "You have successfully completed the examination.";
@@ -194,10 +194,10 @@ if (isset($_POST['complete_exam'])) {
                                 <h4>Examination Summary:</h4>
                                 <table class="table">
                                     <tbody>
-                                        <input id="correct-answer-input" name="correct-answer" type="hidden">
-                                        <input id="total-question-input" name="total-question" type="hidden">
-                                        <input id="correct-points-input" name="correct-points" type="hidden">
-                                        <input id="total-points-input" name="total-points" type="hidden">
+                                        <input id="correct-answer-input" name="correct_answer" type="hidden">
+                                        <input id="total-question-input" name="total_questions" type="hidden">
+                                        <input id="correct-points-input" name="correct_answer_points" type="hidden">
+                                        <input id="total-points-input" name="total_points" type="hidden">
                                         <tr>
                                             <th scope="row">Correct Answer</th>
                                             <td id="correct-answer">Mark</td>

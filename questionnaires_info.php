@@ -106,7 +106,7 @@ $questions = $questions_result->fetch_all(MYSQLI_ASSOC);
                                         <?php
                                             $question_id = $question['question_id'];
                                             $option_sql = "SELECT * FROM options 
-                                               WHERE question_id = $question_id";
+                                               WHERE questionnaires_id = $questionnaire_id && question_id = $question_id";
                                             $options_result = mysqli_query($link, $option_sql);
                                             $options = $options_result->fetch_all(MYSQLI_ASSOC);
                                         ?>

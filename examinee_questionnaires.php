@@ -8,6 +8,19 @@ session_start();
 $questionnaires_sql = "SELECT * FROM questionnaires";
 $questionnaires_result = mysqli_query($link, $questionnaires_sql);
 $questionnaires = $questionnaires_result->fetch_all(MYSQLI_ASSOC);
+
+//add checking for first and second choice
+// $date_now = date("Y-m-d H:i:s");
+// function filterByActivationDate($questionnaires, $dateNow)
+// {
+//     return array_filter($questionnaires, function ($item) use ($dateNow) {
+//         if ($item['end_time'] >= $dateNow) {
+//             return true;
+//         }
+//     });
+// }
+
+// $items = filterByActivationDate($items, $date_now);
 ?>
 
 <!DOCTYPE html>
