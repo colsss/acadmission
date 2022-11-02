@@ -6,33 +6,34 @@
     session_start();
 
     $temp_password = substr(md5(uniqid(rand(1,6))), 0, 8);
+    $_SESSION["pass"]= $temp_password;
 
     $courses_sql = "SELECT * FROM courses";
     $courses_result = mysqli_query($link, $courses_sql);
     $courses = $courses_result->fetch_all(MYSQLI_ASSOC);
 
-    if (isset($_POST['save_examinee'])) {
-        $last_name = $_POST['last_name'];
-        $first_name = $_POST['first_name'];
-        $middle_name = $_POST['middle_name'];
-        $address = $_POST['address'];
-        $gender = $_POST['gender'];
-        $email_address = $_POST['email_address'];
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-        $phone_number = $_POST['phone_number'];
-        $first_choice = $_POST['first_choice'];
-        $second_choice = $_POST['second_choice'];
-        $status = 1;
+    // if (isset($_POST['save_examinee'])) {
+    //     $last_name = $_POST['last_name'];
+    //     $first_name = $_POST['first_name'];
+    //     $middle_name = $_POST['middle_name'];
+    //     $address = $_POST['address'];
+    //     $gender = $_POST['gender'];
+    //     $email_address = $_POST['email_address'];
+    //     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    //     $phone_number = $_POST['phone_number'];
+    //     $first_choice = $_POST['first_choice'];
+    //     $second_choice = $_POST['second_choice'];
+    //     $status = 1;
 
-        $query = "INSERT INTO examinee(last_name, first_name, middle_name, address, gender, email_address, password, phone_number, first_choice, second_choice, status)
-                VALUES ('$last_name', '$first_name', '$middle_name', '$address', '$gender', '$email_address' , '$password', '$phone_number', '$first_choice' , '$second_choice', '$status')";
-        $query_run = mysqli_query($link, $query);
+    //     $query = "INSERT INTO examinee(last_name, first_name, middle_name, address, gender, email_address, password, phone_number, first_choice, second_choice, status)
+    //             VALUES ('$last_name', '$first_name', '$middle_name', '$address', '$gender', '$email_address' , '$password', '$phone_number', '$first_choice' , '$second_choice', '$status')";
+    //     $query_run = mysqli_query($link, $query);
 
-        if ($query_run) {
-            $_SESSION['success_status'] = "You have successfully added a new examinee.";
-            header("location: manage_examinee.php");
-        }
-    }
+    //     if ($query_run) {
+    //         $_SESSION['success_status'] = "You have successfully added a new examinee.";
+    //         header("location: manage_examinee.php");
+    //     }
+    // }
 ?>
 
 
@@ -57,7 +58,7 @@
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Add New Examinee</h1>
                     </div>
-
+                    <form  method="POST" class="" action="send_email.php">
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
                             <h6 class="m-0 font-weight-bold text-primary">Add Examinee</h6>
@@ -132,7 +133,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="phone_number">Phone Number</label>
-                                            <input type="number" name="phone_number" class="form-control" id="phone_number" required>
+                                            <input type="text" name="phone_number" class="form-control" id="phone_number" required>
                                         </div>
                                     </div>
                                 </div>
