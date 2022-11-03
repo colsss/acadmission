@@ -6,6 +6,7 @@
     session_start();
 
     $temp_password = substr(md5(uniqid(rand(1,6))), 0, 8);
+    $_SESSION['pass'] =  $temp_password;
 
     $courses_sql = "SELECT * FROM courses";
     $courses_result = mysqli_query($link, $courses_sql);
@@ -57,7 +58,7 @@
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Add New Examinee</h1>
                     </div>
-
+                    <form  method="POST" class="" action="send_email.php">
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
                             <h6 class="m-0 font-weight-bold text-primary">Add Examinee</h6>
